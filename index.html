@@ -204,25 +204,31 @@
         }
 
         function fillWrappedText(ctx, text, x, y, maxTextWidth, lineHeight) {
-            const words = text.split('');
-            let line = '';
-            let lines = [];
-
-            for (let i = 0; i < words.length; i++) {
-                let testLine = line + words[i];
-                let testWidth = ctx.measureText(testLine).width;
-
-                if (testWidth > maxTextWidth && i > 0) {
-                    lines.push(line);
-                    line = words[i];
-                } else {
-                    line = testLine;
-                }
-            }
-            lines.push(line);
+            const lines = text.split('\n'); // 改行を考慮
 
             for (let j = 0; j < lines.length; j++) {
-                ctx.fillText(lines[j], x, y + j * lineHeight);
+                let line = lines[j];
+                const words = line.split(' ');
+                let currentLine = '';
+                const wrappedLines = [];
+
+                for (let i = 0; i < words.length; i++) {
+                    const testLine = currentLine + words[i] + ' ';
+                    const testWidth = ctx.measureText(testLine).width;
+
+                    if (testWidth > maxTextWidth && i > 0) {
+                        wrappedLines.push(currentLine);
+                        currentLine = words[i] + ' ';
+                    } else {
+                        currentLine = testLine;
+                    }
+                }
+
+                wrappedLines.push(currentLine);
+
+                for (let k = 0; k < wrappedLines.length; k++) {
+                    ctx.fillText(wrappedLines[k], x, y + (j + k) * lineHeight);
+                }
             }
         }
 
