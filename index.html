@@ -76,7 +76,34 @@
 
         /* ダウンロード・シェアボタンの配置 */
         .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* 画像ダウンロードボタンの幅を調整 */
+        #downloadBtn {
+            width: 300px; /* 幅を少し小さく */
+            height: 60px; /* 高さを指定 */
+        }
+
+        /* シェアリンク（ボタン）の幅と高さを調整 */
+        #twitterShare {
             margin-top: 20px;
+            padding: 20px;
+            font-size: 16px;
+            text-align: center;
+            display: inline-block;
+            background-color: #1DA1F2;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            height: 20px; /* 高さを画像ダウンロードボタンに合わせる */
+            line-height: 20px; /* テキストを縦方向に中央揃え */
+            display: flex;
+            align-items: center; /* テキストを中央に揃える */
+            justify-content: center; /* テキストを中央に揃える */
         }
     </style>
 </head>
@@ -119,8 +146,8 @@
                 canvas.height = template.height;
 
                 // 画像を半分のサイズで表示
-                canvas.style.width = (canvas.width / 4) + "px";
-                canvas.style.height = (canvas.height / 4) + "px";
+                canvas.style.width = (canvas.width / 2) + "px";
+                canvas.style.height = (canvas.height / 2) + "px";
 
                 ctx.drawImage(template, 0, 0);
 
