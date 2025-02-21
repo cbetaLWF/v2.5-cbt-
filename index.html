@@ -129,7 +129,7 @@
     <!-- ダウンロード・シェアボタン -->
     <div class="action-buttons">
         <button id="downloadBtn" style="display: none;" onclick="downloadImage()">画像をダウンロード！</button>
-        <a id="twitterShare" href="#" target="_blank" style="display: none;">ココからポスト！！</a>
+        <a id="twitterShare" href="#" target="_blank" style="display: none;">Xで共有！！</a>
     </div>
 
     <script>
@@ -192,7 +192,10 @@
                         fillWrappedText(ctx, text, textX, textY, maxTextWidth, lineHeight);
 
                         document.getElementById("downloadBtn").style.display = "inline";
+
+                        document.getElementById("twitterShare").href = `https://twitter.com/intent/tweet?text=（すみません間に合わなかったので手動で画像を添付してください．推し布教Photoめーかー タグのポストはRPしてまわります！！）&hashtags=推し布教Photoめーかー!!で作成しました！！`;
                         document.getElementById("twitterShare").style.display = "inline";
+                        
                         canvas.style.display = "block";
                     };
                 };
