@@ -129,7 +129,7 @@
     <!-- ダウンロード・シェアボタン -->
     <div class="action-buttons">
         <button id="downloadBtn" style="display: none;" onclick="downloadImage()">画像をダウンロード！</button>
-        <a id="twitterShare" href="#" target="_blank" style="display: none;">Xで共有！！</a>
+        <a id="twitterShare" href="#" target="_blank" style="display: none;">ココからXでシェア！！</a>
     </div>
 
     <script>
@@ -203,32 +203,28 @@
             fileReader.readAsDataURL(input);
         }
 
-        function fillWrappedText(ctx, text, x, y, maxTextWidth, lineHeight) 
-        {
-            const lines = text.split('\n'); // 改行で分割
-            let wrappedLines = [];
+        function fillWrappedText(ctx, text, x, y, maxTextWidth, lineHeight) {
+            const words = text.split('');
+            let line = '';
+            let lines = [];
 
-            lines.forEach(line => {
-                let words = line.split('');
-                let currentLine = '';
-                for (let i = 0; i < words.length; i++) {
-                    let testLine = currentLine + words[i];
-                    let testWidth = ctx.measureText(testLine).width;
-                    if (testWidth > maxTextWidth && i > 0) {
-                        wrappedLines.push(currentLine);
-                        currentLine = words[i];
-                    } else {
-                        currentLine = testLine;
-                    }
+            for (let i = 0; i < words.length; i++) {
+                let testLine = line + words[i];
+                let testWidth = ctx.measureText(testLine).width;
+
+                if (testWidth > maxTextWidth && i > 0) {
+                    lines.push(line);
+                    line = words[i];
+                } else {
+                    line = testLine;
                 }
-                wrappedLines.push(currentLine);
-            });
+            }
+            lines.push(line);
 
-            wrappedLines.forEach((line, index) => {
-                ctx.fillText(line, x, y + index * lineHeight);
-            });
+            for (let j = 0; j < lines.length; j++) {
+                ctx.fillText(lines[j], x, y + j * lineHeight);
+            }
         }
-
 
         function downloadImage() {
             const canvas = document.getElementById("canvas");
