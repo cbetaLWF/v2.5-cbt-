@@ -129,7 +129,7 @@
     <!-- ダウンロード・シェアボタン -->
     <div class="action-buttons">
         <button id="downloadBtn" style="display: none;" onclick="downloadImage()">画像をダウンロード！</button>
-        <a id="twitterShare" href="#" target="_blank" style="display: none;">Xで共有！！</a>
+        <a id="twitterShare" href="#" target="_blank" style="display: none;">ココからXでシェア！！</a>
     </div>
 
     <script>
@@ -139,98 +139,93 @@
             const input = document.getElementById("imageUpload").files[0];
             const text = document.getElementById("textInput").value;
             const template = new Image();
-            template.src = "template.jpg";
+            const userImage = new Image();
 
-            template.onload = function() {
-                canvas.width = template.width;
-                canvas.height = template.height;
+            const fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                userImage.src = e.target.result;
+                userImage.onload = function() {
+                    const maxImageWidth = 1000;
+                    const maxImageHeight = 1000;
+                    let imgWidth = userImage.width;
+                    let imgHeight = userImage.height;
 
-                // 画像を半分のサイズで表示
-                canvas.style.width = (canvas.width / 2) + "px";
-                canvas.style.height = (canvas.height / 2) + "px";
+                    if (imgWidth > maxImageWidth || imgHeight > maxImageHeight) {
+                        const aspectRatio = imgWidth / imgHeight;
+                        if (imgWidth > imgHeight) {
+                            imgWidth = maxImageWidth;
+                            imgHeight = maxImageWidth / aspectRatio;
+                        } else {
+                            imgHeight = maxImageHeight;
+                            imgWidth = maxImageHeight * aspectRatio;
+                        }
+                    }
 
-                ctx.drawImage(template, 0, 0);
+                    const imgAspectRatio = imgWidth / imgHeight;
+                    let templateSrc = (imgAspectRatio < 1) ? 'template2.jpg' : 'template.jpg';  // 縦長ならtemplate2.jpg、横長ならtemplate.jpgを選択
 
-                if (input) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const userImage = new Image();
-                        userImage.src = e.target.result;
-                        userImage.onload = function() {
-                            const maxImageWidth = 1000;
-                            const maxImageHeight = 1000;
-                            let imgWidth = userImage.width;
-                            let imgHeight = userImage.height;
+                    template.src = templateSrc;
+                    template.onload = function() {
+                        canvas.width = template.width;
+                        canvas.height = template.height;
 
-                            if (imgWidth > maxImageWidth || imgHeight > maxImageHeight) {
-                                const aspectRatio = imgWidth / imgHeight;
-                                if (imgWidth > imgHeight) {
-                                    imgWidth = maxImageWidth;
-                                    imgHeight = maxImageWidth / aspectRatio;
-                                } else {
-                                    imgHeight = maxImageHeight;
-                                    imgWidth = maxImageHeight * aspectRatio;
-                                }
-                            }
+                        // 画像を半分のサイズで表示
+                        canvas.style.width = (canvas.width / 2) + "px";
+                        canvas.style.height = (canvas.height / 2) + "px";
 
-                            ctx.save();
-                            ctx.translate(150, 150);
-                            ctx.rotate(6 * Math.PI / 180);
-                            ctx.drawImage(userImage, -imgWidth / 2 + 440, -imgHeight / 2 + 375, imgWidth, imgHeight);
-                            ctx.restore();
+                        ctx.drawImage(template, 0, 0);
 
-                            ctx.font = "40px Mv Boli";
-                            ctx.fillStyle = "black";
-                            ctx.textAlign = "center";
-                            const textX = 545;
-                            const textY = 1470;
-                            const maxTextWidth = 960;
-                            const lineHeight = 40;
+                        ctx.save();
+                        ctx.translate(150, 150);
+                        ctx.rotate(6 * Math.PI / 180);
+                        ctx.drawImage(userImage, -imgWidth / 2 + 440, -imgHeight / 2 + 375, imgWidth, imgHeight);
+                        ctx.restore();
 
-                            fillWrappedText(ctx, text, textX, textY, maxTextWidth, lineHeight);
+                        ctx.font = "40px Mv Boli";
+                        ctx.fillStyle = "black";
+                        ctx.textAlign = "center";
+                        const textX = 545;
+                        const textY = 1470;
+                        const maxTextWidth = 960;
+                        const lineHeight = 40;
 
-                            document.getElementById("downloadBtn").style.display = "inline";
-                            document.getElementById("twitterShare").style.display = "inline";
+                        fillWrappedText(ctx, text, textX, textY, maxTextWidth, lineHeight);
 
-                            // 説明画像を非表示にせず、横並びコンテナを残す
-                            // document.getElementById("instructionContainer").style.display = "none"; // この行をコメントアウト
-
-                            canvas.style.display = "block";
-                        };
+                        document.getElementById("downloadBtn").style.display = "inline";
+                        document.getElementById("twitterShare").style.display = "inline";
+                        canvas.style.display = "block";
                     };
-                    reader.readAsDataURL(input);
-                }
+                };
             };
+            fileReader.readAsDataURL(input);
         }
 
-        function fillWrappedText(ctx, text, x, y, maxTextWidth, lineHeight) {
-            const lines = text.split('\n'); // 改行を考慮
+        function fillWrappedText(ctx, text, x, y, maxTextWidth, lineHeight) 
+        {
+            const lines = text.split('\n'); // 改行で分割
+            let wrappedLines = [];
 
-            for (let j = 0; j < lines.length; j++) {
-                let line = lines[j];
-                const words = line.split(' ');
+            lines.forEach(line => {
+                let words = line.split('');
                 let currentLine = '';
-                const wrappedLines = [];
-
                 for (let i = 0; i < words.length; i++) {
-                    const testLine = currentLine + words[i] + ' ';
-                    const testWidth = ctx.measureText(testLine).width;
-
+                    let testLine = currentLine + words[i];
+                    let testWidth = ctx.measureText(testLine).width;
                     if (testWidth > maxTextWidth && i > 0) {
                         wrappedLines.push(currentLine);
-                        currentLine = words[i] + ' ';
+                        currentLine = words[i];
                     } else {
                         currentLine = testLine;
                     }
                 }
-
                 wrappedLines.push(currentLine);
+            });
 
-                for (let k = 0; k < wrappedLines.length; k++) {
-                    ctx.fillText(wrappedLines[k], x, y + (j + k) * lineHeight);
-                }
-            }
+            wrappedLines.forEach((line, index) => {
+                ctx.fillText(line, x, y + index * lineHeight);
+            });
         }
+
 
         function downloadImage() {
             const canvas = document.getElementById("canvas");
